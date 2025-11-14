@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI App Icon Generator - Wear OS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        input[type="color"],
+        input[type="range"],
+        input[type="text"],
+        select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input[type="range"] {
+            cursor: pointer;
+        }
+
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .preview-container {
+            position: relative;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .preview-box {
+            text-align: center;
+        }
+
+        .preview-label {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        canvas {
+            border-radius: 20%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: white;
+        }
+
+        .download-section {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .size-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .size-info strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 BMI App Icon Generator</h1>
+        <p class="subtitle">Create beautiful app icons for your Wear OS BMI application</p>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="bgColor">Background Color</label>
+                <input type="color" id="bgColor" value="#0F172A">
+            </div>
+            <div class="control-group">
+                <label for="primaryColor">Primary Color</label>
+                <input type="color" id="primaryColor" value="#3B82F6">
+            </div>
+            <div class="control-group">
+                <label for="accentColor">Accent Color</label>
+                <input type="color" id="accentColor" value="#10B981">
+            </div>
+            <div class="control-group">
+                <label for="iconStyle">Icon Style</label>
+                <select id="iconStyle">
+                    <option value="circular">Circular Progress</option>
+                    <option value="bars">BMI Bars</option>
+                    <option value="scale">Scale Icon</option>
+                    <option value="heart">Heart Health</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="glowIntensity">Glow Intensity</label>
+                <input type="range" id="glowIntensity" min="0" max="100" value="50">
+            </div>
+            <div class="control-group">
+                <label for="borderRadius">Border Radius (%)</label>
+                <input type="range" id="borderRadius" min="0" max="50" value="20">
+            </div>
+        </div>
+
+        <div class="preview-section">
+            <h2>Preview</h2>
+            <div class="preview-container">
+                <div class="preview-box">
+                    <canvas id="preview48" width="48" height="48"></canvas>
+                    <div class="preview-label">48x48 (mdpi)</div>
+                </div>
+                <div class="preview-box">
+                    <canvas id="preview72" width="72" height="72"></canvas>
+                    <div class="preview-label">72x72 (hdpi)</div>
+                </div>
+                <div class="preview-box">
+                    <canvas id="preview96" width="96" height="96"></canvas>
+                    <div class="preview-label">96x96 (xhdpi)</div>
+                </div>
+                <div class="preview-box">
+                    <canvas id="preview144" width="144" height="144"></canvas>
+                    <div class="preview-label">144x144 (xxhdpi)</div>
+                </div>
+                <div class="preview-box">
+                    <canvas id="preview192" width="192" height="192"></canvas>
+                    <div class="preview-label">192x192 (xxxhdpi)</div>
+                </div>
+                <div class="preview-box">
+                    <canvas id="preview512" width="512" height="512"></canvas>
+                    <div class="preview-label">512x512 (Store)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <button class="btn-primary" onclick="downloadAll()">Download All Sizes</button>
+            <button class="btn-secondary" onclick="downloadSize(48)">48x48</button>
+            <button class="btn-secondary" onclick="downloadSize(72)">72x72</button>
+            <button class="btn-secondary" onclick="downloadSize(96)">96x96</button>
+            <button class="btn-secondary" onclick="downloadSize(144)">144x144</button>
+            <button class="btn-secondary" onclick="downloadSize(192)">192x192</button>
+            <button class="btn-secondary" onclick="downloadSize(512)">512x512</button>
+        </div>
+
+        <div class="size-info">
+            <strong>📱 Where to place icons in your Android project:</strong><br>
+            • 48x48 → <code>res/mipmap-mdpi/ic_launcher.png</code><br>
+            • 72x72 → <code>res/mipmap-hdpi/ic_launcher.png</code><br>
+            • 96x96 → <code>res/mipmap-xhdpi/ic_launcher.png</code><br>
+            • 144x144 → <code>res/mipmap-xxhdpi/ic_launcher.png</code><br>
+            • 192x192 → <code>res/mipmap-xxxhdpi/ic_launcher.png</code><br>
+            • 512x512 → For Google Play Store listing
+        </div>
+    </div>
+
+    <script>
+        const canvases = {
+            48: document.getElementById('preview48'),
+            72: document.getElementById('preview72'),
+            96: document.getElementById('preview96'),
+            144: document.getElementById('preview144'),
+            192: document.getElementById('preview192'),
+            512: document.getElementById('preview512')
+        };
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const bgColor = document.getElementById('bgColor').value;
+            const primaryColor = document.getElementById('primaryColor').value;
+            const accentColor = document.getElementById('accentColor').value;
+            const iconStyle = document.getElementById('iconStyle').value;
+            const glowIntensity = document.getElementById('glowIntensity').value / 100;
+            const borderRadius = document.getElementById('borderRadius').value;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+
+            // Draw background with rounded corners
+            ctx.fillStyle = bgColor;
+            ctx.beginPath();
+            const radius = (size * borderRadius) / 100;
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+
+            // Add glow effect
+            if (glowIntensity > 0) {
+                ctx.shadowColor = primaryColor;
+                ctx.shadowBlur = size * 0.15 * glowIntensity;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const scale = size / 512;
+
+            switch(iconStyle) {
+                case 'circular':
+                    drawCircularProgress(ctx, centerX, centerY, size, primaryColor, accentColor, scale);
+                    break;
+                case 'bars':
+                    drawBars(ctx, centerX, centerY, size, primaryColor, accentColor, scale);
+                    break;
+                case 'scale':
+                    drawScale(ctx, centerX, centerY, size, primaryColor, accentColor, scale);
+                    break;
+                case 'heart':
+                    drawHeart(ctx, centerX, centerY, size, primaryColor, accentColor, scale);
+                    break;
+            }
+
+            // Reset shadow
+            ctx.shadowBlur = 0;
+        }
+
+        function drawCircularProgress(ctx, x, y, size, primary, accent, scale) {
+            const radius = size * 0.35;
+            const lineWidth = size * 0.08;
+
+            // Background circle
+            ctx.strokeStyle = primary + '40';
+            ctx.lineWidth = lineWidth;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Progress arc (75% for visual appeal)
+            ctx.strokeStyle = primary;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.arc(x, y, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * 0.75);
+            ctx.stroke();
+
+            // Center text "BMI"
+            ctx.fillStyle = primary;
+            ctx.font = `bold ${size * 0.15}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('BMI', x, y);
+        }
+
+        function drawBars(ctx, x, y, size, primary, accent, scale) {
+            const barWidth = size * 0.12;
+            const barSpacing = size * 0.08;
+            const startX = x - (barWidth * 2 + barSpacing);
+            const heights = [0.3, 0.6, 0.9, 0.5];
+
+            heights.forEach((height, i) => {
+                const barX = startX + i * (barWidth + barSpacing);
+                const barHeight = size * 0.4 * height;
+                const barY = y + size * 0.2 - barHeight;
+
+                ctx.fillStyle = i === 1 ? accent : primary;
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+            });
+        }
+
+        function drawScale(ctx, x, y, size, primary, accent, scale) {
+            // Scale base
+            ctx.strokeStyle = primary;
+            ctx.lineWidth = size * 0.06;
+            ctx.beginPath();
+            ctx.moveTo(x - size * 0.25, y + size * 0.15);
+            ctx.lineTo(x, y - size * 0.1);
+            ctx.lineTo(x + size * 0.25, y + size * 0.15);
+            ctx.stroke();
+
+            // Center indicator
+            ctx.fillStyle = accent;
+            ctx.beginPath();
+            ctx.arc(x, y - size * 0.1, size * 0.08, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawHeart(ctx, x, y, size, primary, accent, scale) {
+            // Heart shape
+            ctx.fillStyle = accent;
+            ctx.beginPath();
+            const heartSize = size * 0.2;
+            ctx.moveTo(x, y + heartSize * 0.3);
+            ctx.bezierCurveTo(x, y, x - heartSize, y - heartSize * 0.5, x - heartSize * 0.5, y - heartSize * 0.5);
+            ctx.bezierCurveTo(x - heartSize, y - heartSize * 0.5, x - heartSize, y, x, y + heartSize * 0.3);
+            ctx.bezierCurveTo(x + heartSize, y, x + heartSize, y - heartSize * 0.5, x + heartSize * 0.5, y - heartSize * 0.5);
+            ctx.bezierCurveTo(x + heartSize, y - heartSize * 0.5, x, y, x, y + heartSize * 0.3);
+            ctx.fill();
+
+            // BMI text below
+            ctx.fillStyle = primary;
+            ctx.font = `bold ${size * 0.12}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.fillText('BMI', x, y + heartSize * 0.8);
+        }
+
+        // Polyfill for roundRect if not available
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+
+        function updateAllPreviews() {
+            Object.keys(canvases).forEach(size => {
+                drawIcon(canvases[size], parseInt(size));
+            });
+        }
+
+        function downloadCanvas(canvas, filename) {
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        function downloadSize(size) {
+            const canvas = canvases[size];
+            downloadCanvas(canvas, `bmi_icon_${size}x${size}.png`);
+        }
+
+        function downloadAll() {
+            Object.keys(canvases).forEach(size => {
+                setTimeout(() => downloadSize(parseInt(size)), parseInt(size) * 10);
+            });
+        }
+
+        // Event listeners
+        document.getElementById('bgColor').addEventListener('input', updateAllPreviews);
+        document.getElementById('primaryColor').addEventListener('input', updateAllPreviews);
+        document.getElementById('accentColor').addEventListener('input', updateAllPreviews);
+        document.getElementById('iconStyle').addEventListener('change', updateAllPreviews);
+        document.getElementById('glowIntensity').addEventListener('input', updateAllPreviews);
+        document.getElementById('borderRadius').addEventListener('input', updateAllPreviews);
+
+        // Initial render
+        updateAllPreviews();
+    </script>
+</body>
+</html>
