@@ -62,8 +62,8 @@ pollination ai.md
 images_bmi/
 images_bmi_pro/
 
-# Docs folder (except if needed)
-docs/
+# Docs folder - now included for learning/documentation
+# docs/
 
 # Temporary files
 *.tmp
