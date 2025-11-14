@@ -1,0 +1,76 @@
+# Built application files
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Files for the ART/Dalvik VM
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# Gradle files
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+
+# Android Studio
+*.log
+*.hprof
+.cxx/
+.externalNativeBuild/
+.cxx/
+
+# IntelliJ IDEA
+*.iml
+.idea/
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Documentation files (except README.md)
+*.md
+!README.md
+
+# Other markdown files
+PUBLISHING_GUIDE.md
+BMI_APP_SPECIFICATION.md
+IMPROVEMENTS_SUMMARY.md
+SQUARE_VS_CIRCULAR_WATCH.md
+AI_ANALYSIS_TEMPLATES.md
+pollination ai.md
+
+# Image folders (not needed in repo)
+images_bmi/
+images_bmi_pro/
+
+# Docs folder (except if needed)
+docs/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Log files
+*.log
+
